@@ -43,6 +43,11 @@ const navSections: NavSection[] = [
         path: '/astro/instant-sessions',
         scopes: ['astro.instant-sessions:read', 'astro.*:read'],
       },
+      {
+        name: 'Call recordings',
+        path: '/astro/call-recordings',
+        scopes: ['astro.call-recordings:read', 'astro.*:read'],
+      },
     ],
   },
   {

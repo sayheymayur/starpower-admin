@@ -6,14 +6,14 @@ export type CallRecordingStatus = 'recording' | 'completed' | 'stopped' | 'faile
 
 export interface CallRecordingParticipant {
   userId: number;
-  fullName: string;
+  fullName: string | null;
   username: string | null;
   phone: string | null;
 }
 
 export interface CallRecordingSession {
-  sessionUuid: string;
-  sessionType: number;
+  sessionUuid: string | null;
+  sessionType: number | null;
   startDateTime: string | null;
   endDateTime: string | null;
 }
@@ -30,9 +30,12 @@ export interface CallRecording {
   startedAt: string | null;
   stoppedAt: string | null;
   createdAt: string;
+  kind?: 'booking' | 'listener';
+  bookingId?: number | null;
   session: CallRecordingSession | null;
   user: CallRecordingParticipant | null;
   listener: CallRecordingParticipant | null;
+  astrologer?: CallRecordingParticipant | null;
 }
 
 export interface CallRecordingPagination {
@@ -77,7 +80,8 @@ interface DetailResponse {
   message?: string;
 }
 
-const BASE = `${API_CONFIG.BASE_URL}/dashboard/api/call-recordings`;
+/** StarPower booking recordings (gateway: /api/dashboard/api/astro/call-recordings) */
+const BASE = `${API_CONFIG.BASE_URL}/astro/call-recordings`;
 
 function buildQuery(params?: CallRecordingListParams): string {
   if (!params) return '';

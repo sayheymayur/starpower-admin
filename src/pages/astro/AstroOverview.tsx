@@ -94,6 +94,7 @@ export default function AstroOverviewPage() {
             </Link>
             <Link to="/astro/bookings" className={astroBtn}>View bookings</Link>
             <Link to="/astro/instant-sessions" className={astroBtn}>Instant sessions</Link>
+            <Link to="/astro/call-recordings" className={astroBtn}>Call recordings</Link>
             <Link to="/astro/wallets" className={astroBtn}>Wallets</Link>
             <Link to="/astro/transactions" className={astroBtn}>Payments</Link>
             <Link to="/astro/payouts" className={astroBtn}>Payouts</Link>

@@ -29,6 +29,8 @@ import AstroSupportTickets from "./pages/astro/AstroSupportTickets";
 import AstroSupportTicketDetail from "./pages/astro/AstroSupportTicketDetail";
 import InstantSessions from "./pages/astro/InstantSessions";
 import InstantSessionDetail from "./pages/astro/InstantSessionDetail";
+import AstroCallRecordings from "./pages/astro/AstroCallRecordings";
+import AstroCallRecordingDetail from "./pages/astro/AstroCallRecordingDetail";
 import AstroWallets from "./pages/astro/AstroWallets";
 import AstroWalletDetail from "./pages/astro/AstroWalletDetail";
 import AstroWalletTransactions from "./pages/astro/AstroWalletTransactions";
@@ -80,6 +82,8 @@ export default function App() {
             <Route path="/astro/bookings/:bookingId" element={<AstroBookingDetail />} />
             <Route path="/astro/instant-sessions" element={<InstantSessions />} />
             <Route path="/astro/instant-sessions/:sessionId" element={<InstantSessionDetail />} />
+            <Route path="/astro/call-recordings" element={<AstroCallRecordings />} />
+            <Route path="/astro/call-recordings/:recordingId" element={<AstroCallRecordingDetail />} />
             <Route path="/astro/coupons" element={<AstroCoupons />} />
             <Route path="/astro/transactions" element={<AstroTransactions />} />
             <Route path="/astro/transactions/:transactionId" element={<AstroTransactionDetail />} />
