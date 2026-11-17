@@ -6,6 +6,7 @@ import {
   CallRecording,
   RECORDING_STATUS_LABELS,
   callRecordingsAPI,
+  downloadRecordingMp3,
   formatRecordingDuration,
   recordingStatusColor,
 } from '../../services/api/callRecordings';
@@ -14,6 +15,7 @@ import {
   AstroBackLink,
   AstroLoading,
   AstroPageHeader,
+  astroBtn,
   astroCard,
 } from './components/astroUi';
 
@@ -22,6 +24,8 @@ export default function AstroCallRecordingDetail() {
   const [recording, setRecording] = useState<CallRecording | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!recordingId) return;
@@ -51,8 +55,21 @@ export default function AstroCallRecordingDetail() {
   }
 
   const canPlay = recording.status === 'completed' && Boolean(recording.recordingUrl);
+  const canDownload = Boolean(recording.recordingUrl);
   const duration = formatRecordingDuration(recording.startedAt, recording.stoppedAt);
   const partner = recording.astrologer ?? recording.listener;
+
+  const onDownloadMp3 = async () => {
+    try {
+      setDownloading(true);
+      setDownloadError(null);
+      await downloadRecordingMp3(recording.recordingId);
+    } catch (e) {
+      setDownloadError(e instanceof ApiError ? e.message : 'Failed to download MP3');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -61,14 +78,21 @@ export default function AstroCallRecordingDetail() {
         title={`Recording #${recording.recordingId}`}
         description={recording.channelName}
         action={
-          recording.bookingId != null ? (
-            <Link
-              to={`/astro/bookings/${recording.bookingId}`}
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-            >
-              View booking
-            </Link>
-          ) : undefined
+          <div className="flex flex-wrap gap-2">
+            {canDownload && (
+              <button type="button" disabled={downloading} onClick={() => void onDownloadMp3()} className={astroBtn}>
+                {downloading ? 'Converting to MP3…' : 'Download MP3'}
+              </button>
+            )}
+            {recording.bookingId != null && (
+              <Link
+                to={`/astro/bookings/${recording.bookingId}`}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
+              >
+                View booking
+              </Link>
+            )}
+          </div>
         }
       />
 
@@ -85,6 +109,9 @@ export default function AstroCallRecordingDetail() {
       </div>
 
       {error && <AstroAlert type="error" message={error} onDismiss={() => setError(null)} />}
+      {downloadError && (
+        <AstroAlert type="error" message={downloadError} onDismiss={() => setDownloadError(null)} />
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">

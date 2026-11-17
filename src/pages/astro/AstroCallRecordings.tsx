@@ -8,6 +8,7 @@ import {
   RECORDING_STATUSES,
   RECORDING_STATUS_LABELS,
   callRecordingsAPI,
+  downloadRecordingMp3,
   formatRecordingDuration,
   recordingStatusColor,
 } from '../../services/api/callRecordings';
@@ -217,7 +218,23 @@ export default function AstroCallRecordings() {
 function RecordingRow({ recording }: { recording: CallRecording }) {
   const duration = formatRecordingDuration(recording.startedAt, recording.stoppedAt);
   const hasPlayback = recording.status === 'completed' && Boolean(recording.recordingUrl);
+  const canDownload = Boolean(recording.recordingUrl);
   const partner = recording.astrologer ?? recording.listener;
+  const [downloading, setDownloading] = useState(false);
+
+  const onDownload = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!canDownload || downloading) return;
+    try {
+      setDownloading(true);
+      await downloadRecordingMp3(recording.recordingId);
+    } catch {
+      /* ignore on list */
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <Link
@@ -279,7 +296,19 @@ function RecordingRow({ recording }: { recording: CallRecording }) {
                 })
               : '—'}
           </p>
-          <p className="mt-1 text-xs text-brand-600 dark:text-brand-400">View details →</p>
+          <div className="mt-2 flex flex-col items-end gap-1">
+            {canDownload && (
+              <button
+                type="button"
+                disabled={downloading}
+                onClick={(e) => void onDownload(e)}
+                className="rounded-md bg-brand-500 px-2.5 py-1 text-xs font-medium text-white hover:bg-brand-600 disabled:opacity-50"
+              >
+                {downloading ? 'Converting…' : 'Download MP3'}
+              </button>
+            )}
+            <p className="text-xs text-brand-600 dark:text-brand-400">View details →</p>
+          </div>
         </div>
       </div>
     </Link>

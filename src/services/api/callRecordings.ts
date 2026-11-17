@@ -128,7 +128,44 @@ export const callRecordingsAPI = {
 
   getById: (recordingId: number) =>
     recordingRequest<DetailResponse>(`/${recordingId}`).then((r) => r.data),
+
+  /** Server converts HLS/mp4 → MP3 via ffmpeg and returns the file blob. */
+  downloadMp3: async (recordingId: number): Promise<Blob> => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    const res = await fetch(`${BASE}/${recordingId}/download-mp3`, {
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+    if (res.status === 401) {
+      authService.handleUnauthorized();
+      window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT));
+      throw new ApiError('Session expired. Please log in again.', 401);
+    }
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new ApiError(
+        (body as { message?: string }).message ?? `HTTP ${res.status}`,
+        res.status,
+        body
+      );
+    }
+    return res.blob();
+  },
 };
+
+/** Trigger a browser file download for a recording as MP3. */
+export async function downloadRecordingMp3(recordingId: number, filename?: string): Promise<void> {
+  const blob = await callRecordingsAPI.downloadMp3(recordingId);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename ?? `call-recording-${recordingId}.mp3`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 export const RECORDING_STATUS_LABELS: Record<CallRecordingStatus, string> = {
   recording: 'Recording',
