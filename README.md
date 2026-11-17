@@ -10,7 +10,7 @@ npm install
 npm run dev
 ```
 
-`VITE_DASHBOARD_API` defaults to `https://paapi.sayhey.co.in/api`. Login always sends `product: "starpower"`.
+`VITE_DASHBOARD_API` defaults to `https://paapi.sayhey.co.in/api/dashboard/api` (production gateway). Login always sends `product: "starpower"`.
 
 ## Hosts
 
