@@ -17,6 +17,7 @@ export default defineConfig({
   ],
   server: {
     allowedHosts: [
+      "admin.starpower.co.in",
       "admin.starpower.app",
       "starpower-admin.sayhey.co.in",
       "localhost",
@@ -28,6 +29,7 @@ export default defineConfig({
   },
   preview: {
     allowedHosts: [
+      "admin.starpower.co.in",
       "admin.starpower.app",
       "starpower-admin.sayhey.co.in",
       "localhost",
