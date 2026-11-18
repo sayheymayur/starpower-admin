@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { ApiError } from '../../services/api/base';
 import {
   astroFinanceAPI,
@@ -224,7 +225,17 @@ export default function AstroPayouts() {
                           </Link>
                           <p className="text-xs text-gray-400">{item.mobileNo ?? '—'}</p>
                         </td>
-                        <td className={tdClass}>{item.earnings.completedSessions}</td>
+                        <td className={tdClass}>
+                          {item.earnings.totalSessions ?? item.earnings.completedSessions}
+                          {(item.earnings.freeSessions ?? 0) > 0 && (
+                            <span className="ml-2 align-middle">
+                              <FreeFeeBadge />
+                              <span className="ml-1 text-xs text-gray-500">
+                                ×{item.earnings.freeSessions}
+                              </span>
+                            </span>
+                          )}
+                        </td>
                         <td className={tdClass}>{formatINR(item.earnings.totalEarned)}</td>
                         <td className={tdClass}>
                           {(item.earnings.totalAdjustments ?? 0) !== 0
@@ -236,6 +247,11 @@ export default function AstroPayouts() {
                           <span className="font-semibold text-amber-700 dark:text-amber-400">
                             {formatINR(item.earnings.pendingBalance)}
                           </span>
+                          {(item.earnings.overpaidAmount ?? 0) > 0 && (
+                            <p className="text-xs font-medium text-red-600 dark:text-red-400">
+                              Overpaid {formatINR(item.earnings.overpaidAmount ?? 0)}
+                            </p>
+                          )}
                         </td>
                         <td className={tdClass}>
                           {item.bankDetails?.ifscCode ? (

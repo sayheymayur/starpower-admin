@@ -6,10 +6,12 @@ import {
   AstroBooking,
   CancelAstroBookingBody,
   CancelAstroBookingData,
+  SetAstrologerFeeBody,
 } from '../../services/api/astro';
 import CancelBookingModal, {
   formatCancelNotificationSummary,
 } from './components/CancelBookingModal';
+import AstrologerFeeCard from './components/AstrologerFeeCard';
 import { useModal } from '../../hooks/useModal';
 import {
   AstroAlert,
@@ -186,6 +188,13 @@ export default function AstroBookingDetailPage() {
         : res.message ?? 'Booking cancelled and parties notified.'
     );
     return meta;
+  };
+
+  const handleFeeChange = async (body: SetAstrologerFeeBody) => {
+    if (!booking) return;
+    const res = await astroAPI.setBookingAstrologerFee(booking.bookingId, body);
+    await loadBooking(booking.bookingId);
+    setSuccess(res.message ?? (body.free ? 'Astrologer fee marked as free.' : 'Astrologer fee restored.'));
   };
 
   if (loading) return <AstroLoading label="Loading booking…" />;
@@ -467,6 +476,12 @@ export default function AstroBookingDetailPage() {
               {duration && <AstroInfoRow label="Duration" value={duration} />}
             </div>
           </AstroSectionCard>
+
+          <AstrologerFeeCard
+            fee={booking.astrologerFee}
+            subject={`booking #${booking.bookingId}`}
+            onChange={handleFeeChange}
+          />
 
           {showCancel && (
             <AstroSectionCard

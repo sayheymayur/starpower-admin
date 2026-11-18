@@ -52,6 +52,17 @@ export interface AstroEarningsSummary {
   effectiveTotalEarned: number;
   totalPaidOut: number;
   pendingBalance: number;
+  /** Paid out more than currently earned (fee marked free after payout). Blocks new payouts. */
+  overpaidAmount?: number;
+  /** Sessions that earned a fee (paid, not waived). */
+  paidSessions?: number;
+  /** Admin-waived + system free-grant sessions, shown as "Free". */
+  freeSessions?: number;
+  waivedSessions?: number;
+  freeGrantSessions?: number;
+  totalSessions?: number;
+  /** Fee that would have been earned on admin-waived sessions. */
+  waivedAmount?: number;
 }
 
 export type AstroEarningsAdjustmentDirection = 'add' | 'deduct';
@@ -110,14 +121,22 @@ export interface AstroEarningsQueueItem {
 }
 
 export interface AstroCompletedSession {
-  bookingId: number;
-  sessionType: 1 | 2;
+  kind?: 'booking' | 'instant';
+  bookingId: number | null;
+  sessionId?: string | null;
+  sessionType: 1 | 2 | number | null;
   startDateTime: string;
   endDateTime: string;
   userName: string;
   paidAmountExGst: number;
   gstAmount: number;
   earning: number;
+  /** True for admin-waived and system free-grant sessions (earning is 0). */
+  isFree?: boolean;
+  feeLabel?: 'Free' | null;
+  freeSource?: 'admin' | 'free_grant' | null;
+  waivedAmount?: number | null;
+  freeReason?: string | null;
 }
 
 export interface AstroEarningsDetail extends AstroEarningsQueueItem {

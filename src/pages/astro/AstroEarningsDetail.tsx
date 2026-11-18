@@ -4,6 +4,7 @@ import { ApiError } from '../../services/api/base';
 import { astroFinanceAPI, AstroEarningsDetail } from '../../services/api/astroFinance';
 import RecordPayoutModal from './components/RecordPayoutModal';
 import RecordEarningsAdjustmentModal from './components/RecordEarningsAdjustmentModal';
+import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import {
   AstroAlert,
   AstroBackLink,
@@ -68,6 +69,8 @@ export default function AstroEarningsDetailPage() {
   const totalAdjustments = earnings.totalAdjustments ?? 0;
   const effectiveTotalEarned = earnings.effectiveTotalEarned ?? earnings.totalEarned;
   const adjustmentHistory = detail.adjustmentHistory ?? [];
+  const overpaid = earnings.overpaidAmount ?? 0;
+  const freeSessions = earnings.freeSessions ?? 0;
 
   return (
     <div className="space-y-6">
@@ -109,8 +112,19 @@ export default function AstroEarningsDetailPage() {
       {error && <AstroAlert type="error" message={error} onDismiss={() => setError(null)} />}
       {success && <AstroAlert type="success" message={success} onDismiss={() => setSuccess(null)} />}
 
+      {overpaid > 0 && (
+        <AstroAlert
+          type="error"
+          message={`Overpaid by ${formatINR(overpaid)}: a session fee was marked free after it was paid out. New payouts are blocked until future earnings offset this amount.`}
+        />
+      )}
+
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <AstroStatCard label="Completed sessions" value={earnings.completedSessions} />
+        <AstroStatCard
+          label="Sessions"
+          value={earnings.totalSessions ?? earnings.completedSessions}
+          sub={freeSessions > 0 ? `${freeSessions} free` : undefined}
+        />
         <AstroStatCard label="Session earnings" value={formatINR(earnings.totalEarned)} accent="sky" />
         <AstroStatCard
           label="Adjustments"
@@ -122,6 +136,7 @@ export default function AstroEarningsDetailPage() {
           label="Pending balance"
           value={formatINR(earnings.pendingBalance)}
           accent="amber"
+          sub={overpaid > 0 ? `Overpaid ${formatINR(overpaid)}` : undefined}
         />
       </div>
 
@@ -153,6 +168,27 @@ export default function AstroEarningsDetailPage() {
               value={formatINR(effectiveTotalEarned)}
             />
             <AstroInfoRow label="Paid out" value={formatINR(earnings.totalPaidOut)} />
+            {freeSessions > 0 && (
+              <AstroInfoRow
+                label="Free sessions"
+                value={
+                  <span className="inline-flex items-center gap-2">
+                    <FreeFeeBadge /> {freeSessions}
+                    {(earnings.waivedAmount ?? 0) > 0 && (
+                      <span className="text-xs text-gray-500">
+                        (waived {formatINR(earnings.waivedAmount ?? 0)})
+                      </span>
+                    )}
+                  </span>
+                }
+              />
+            )}
+            {overpaid > 0 && (
+              <AstroInfoRow
+                label="Overpaid (carried forward)"
+                value={<span className="text-red-600 dark:text-red-400">{formatINR(overpaid)}</span>}
+              />
+            )}
             <AstroInfoRow
               label="Pending balance"
               value={formatINR(earnings.pendingBalance)}
@@ -199,7 +235,7 @@ export default function AstroEarningsDetailPage() {
 
       <AstroSectionCard
         title="Recent completed sessions"
-        description="Qualifying bookings that contribute to earnings"
+        description="Paid sessions contribute to earnings; sessions marked Free earn nothing"
       >
         {detail.recentCompletedSessions.length === 0 ? (
           <p className="text-sm text-gray-500">No completed sessions yet.</p>
@@ -219,24 +255,50 @@ export default function AstroEarningsDetailPage() {
                 </thead>
                 <tbody className="divide-y divide-brand-50 dark:divide-brand-900/20">
                   {detail.recentCompletedSessions.map((s) => (
-                    <tr key={s.bookingId}>
+                    <tr key={`${s.kind ?? 'booking'}-${s.bookingId ?? s.sessionId}`}>
                       <td className={tdClass}>
-                        <Link
-                          to={`/astro/bookings/${s.bookingId}`}
-                          className="font-mono text-xs text-brand-600 hover:underline dark:text-brand-400"
-                        >
-                          #{s.bookingId}
-                        </Link>
+                        {s.kind === 'instant' || s.bookingId == null ? (
+                          <Link
+                            to={`/astro/instant-sessions/${encodeURIComponent(s.sessionId ?? '')}`}
+                            className="font-mono text-xs text-brand-600 hover:underline dark:text-brand-400"
+                          >
+                            Instant
+                          </Link>
+                        ) : (
+                          <Link
+                            to={`/astro/bookings/${s.bookingId}`}
+                            className="font-mono text-xs text-brand-600 hover:underline dark:text-brand-400"
+                          >
+                            #{s.bookingId}
+                          </Link>
+                        )}
                       </td>
                       <td className={tdClass}>
-                        <SessionTypeBadge type={s.sessionType} />
+                        {s.sessionType === 1 || s.sessionType === 2 ? (
+                          <SessionTypeBadge type={s.sessionType} />
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className={tdClass}>{s.userName}</td>
                       <td className={tdClass}>{formatAstroDate(s.endDateTime)}</td>
                       <td className={tdClass}>{formatINR(s.paidAmountExGst)}</td>
                       <td className={tdClass}>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span>{formatINR(s.earning)}</span>
+                          {s.isFree ? (
+                            <>
+                              <FreeFeeBadge source={s.freeSource} />
+                              <span>{formatINR(0)}</span>
+                              {s.waivedAmount != null && s.waivedAmount > 0 && (
+                                <span className="text-xs text-gray-500 line-through">
+                                  {formatINR(s.waivedAmount)}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span>{formatINR(s.earning)}</span>
+                          )}
+                          {!s.isFree && s.kind !== 'instant' && s.bookingId != null && (
                           <button
                             type="button"
                             onClick={() => {
@@ -248,6 +310,7 @@ export default function AstroEarningsDetailPage() {
                           >
                             Deduct
                           </button>
+                          )}
                         </div>
                       </td>
                     </tr>

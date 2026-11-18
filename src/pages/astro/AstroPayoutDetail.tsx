@@ -111,9 +111,15 @@ export default function AstroPayoutDetail() {
           <AstroSectionCard title="Current earnings snapshot">
             <dl className="divide-y divide-brand-50 dark:divide-brand-900/20">
               <AstroInfoRow
-                label="Completed sessions"
-                value={String(payout.earnings.completedSessions)}
+                label="Sessions"
+                value={String(payout.earnings.totalSessions ?? payout.earnings.completedSessions)}
               />
+              {(payout.earnings.freeSessions ?? 0) > 0 && (
+                <AstroInfoRow
+                  label="Free sessions (no payout)"
+                  value={String(payout.earnings.freeSessions)}
+                />
+              )}
               <AstroInfoRow
                 label="Commission"
                 value={formatCommissionRate(payout.earnings.commissionRate)}
@@ -122,6 +128,12 @@ export default function AstroPayoutDetail() {
                 label="Total paid out"
                 value={formatINR(payout.earnings.totalPaidOut)}
               />
+              {(payout.earnings.overpaidAmount ?? 0) > 0 && (
+                <AstroInfoRow
+                  label="Overpaid (carried forward)"
+                  value={formatINR(payout.earnings.overpaidAmount ?? 0)}
+                />
+              )}
               <AstroInfoRow
                 label="Pending balance"
                 value={formatINR(payout.earnings.pendingBalance)}

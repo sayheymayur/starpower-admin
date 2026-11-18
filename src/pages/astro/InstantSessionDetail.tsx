@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ApiError } from '../../services/api/base';
-import { astroAPI, type AstroInstantSession } from '../../services/api/astro';
+import {
+  astroAPI,
+  type AstroInstantSession,
+  type SetAstrologerFeeBody,
+} from '../../services/api/astro';
+import AstrologerFeeCard, { FreeFeeBadge } from './components/AstrologerFeeCard';
 import {
   AstroAlert,
   AstroBackLink,
@@ -34,6 +39,13 @@ export default function InstantSessionDetail() {
     })();
   }, [sessionId]);
 
+  const handleFeeChange = async (body: SetAstrologerFeeBody) => {
+    if (!sessionId) return;
+    await astroAPI.setInstantSessionAstrologerFee(sessionId, body);
+    const res = await astroAPI.getInstantSession(sessionId);
+    setData(res.data);
+  };
+
   if (loading) return <AstroLoading label="Loading instant session…" />;
 
   return (
@@ -53,7 +65,18 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Status" value={data.status ?? 'completed'} />
             <AstroInfoRow label="Billed minutes" value={data.billedMinutes} />
             <AstroInfoRow label="Amount" value={formatINR(data.amount)} />
-            <AstroInfoRow label="Earning" value={formatINR(data.earning)} />
+            <AstroInfoRow
+              label="Earning"
+              value={
+                data.isFree ? (
+                  <span className="inline-flex items-center gap-2">
+                    <FreeFeeBadge source="admin" /> {formatINR(0)}
+                  </span>
+                ) : (
+                  formatINR(data.earning)
+                )
+              }
+            />
           </AstroSectionCard>
           <AstroSectionCard title="Parties & timing">
             <AstroInfoRow label="User" value={data.userName ? `${data.userName} (#${data.userId})` : data.userId} />
@@ -66,6 +89,11 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Started" value={formatAstroDate(data.startDateTime)} />
             <AstroInfoRow label="Ended" value={formatAstroDate(data.endDateTime)} />
           </AstroSectionCard>
+          <AstrologerFeeCard
+            fee={data.astrologerFee}
+            subject="this instant session"
+            onChange={handleFeeChange}
+          />
         </div>
       )}
     </div>

@@ -137,6 +137,10 @@ export interface AstroBooking {
   endDateTime: string | null;
   remark?: string | null;
   isCancelledByServer?: boolean | number | null;
+  /** Detail endpoint only. */
+  astrologerFee?: AstrologerFeeState;
+  /** List endpoint: astrologer earns nothing for this booking (admin-waived or free grant). */
+  isAstrologerFeeFree?: boolean;
   user: {
     userId: number;
     userName: string;
@@ -459,6 +463,19 @@ export const astroAPI = {
       }
     ),
 
+  /** Mark a completed paid booking's astrologer fee free (or restore it). */
+  setBookingAstrologerFee: (bookingId: number, body: SetAstrologerFeeBody) =>
+    astroRequest<AstroDetailResponse<SetAstrologerFeeResult & { bookingId: number }>>(
+      `/bookings/${bookingId}/astrologer-fee`,
+      { method: 'PATCH', body: JSON.stringify(body) }
+    ),
+
+  setInstantSessionAstrologerFee: (sessionId: string, body: SetAstrologerFeeBody) =>
+    astroRequest<AstroDetailResponse<SetAstrologerFeeResult & { sessionId: string }>>(
+      `/instant-sessions/${encodeURIComponent(sessionId)}/astrologer-fee`,
+      { method: 'PATCH', body: JSON.stringify(body) }
+    ),
+
   listInstantSessions: (params?: ListParams) =>
     astroRequest<AstroListResponse<AstroInstantSession>>(
       `/instant-sessions${buildQuery(params)}`
@@ -488,7 +505,14 @@ export interface AstroInstantSession {
   sessionTypeLabel?: string;
   billedMinutes: number;
   amount: number;
+  /** Net astrologer earning (0 when the fee was marked free). */
   earning: number;
+  standardEarning?: number;
+  isFree?: boolean;
+  feeLabel?: 'Free' | null;
+  waivedAmount?: number | null;
+  /** Detail endpoint only. */
+  astrologerFee?: AstrologerFeeState;
   requestDateTime?: string | null;
   startDateTime: string | null;
   endDateTime: string | null;
@@ -496,10 +520,44 @@ export interface AstroInstantSession {
   status?: string;
 }
 
+export interface AstrologerFeeState {
+  isFree: boolean;
+  feeLabel: 'Free' | null;
+  source: 'admin' | 'free_grant' | null;
+  canMarkFree: boolean;
+  canRevert: boolean;
+  earning: number | null;
+  standardEarning: number | null;
+  waivedAmount: number | null;
+  reason: string | null;
+  markedByAdminId: number | null;
+  markedAt: string | null;
+  waiverId: number | null;
+}
+
+export interface SetAstrologerFeeBody {
+  free: boolean;
+  /** Required (min 3 chars) when free is true. */
+  reason?: string;
+}
+
+export interface SetAstrologerFeeResult {
+  fee: AstrologerFeeState;
+  astrologerUserId: number;
+  changed: boolean;
+  earningsAfter?: {
+    totalEarned: number;
+    totalPaidOut: number;
+    pendingBalance: number;
+    overpaidAmount?: number;
+  };
+}
+
 export interface AstroInstantSessionStats {
   totalSessions: number;
   totalAmount: number;
   totalEarning: number;
+  freeSessions?: number;
   totalBilledMinutes: number;
   bySessionType?: Record<string, number>;
 }

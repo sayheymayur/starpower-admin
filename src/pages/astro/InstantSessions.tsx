@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { ApiError } from '../../services/api/base';
 import {
   astroAPI,
@@ -80,7 +81,12 @@ export default function InstantSessions() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <AstroStatCard label="Sessions" value={stats.totalSessions ?? 0} />
           <AstroStatCard label="Billed amount" value={formatINR(stats.totalAmount ?? 0)} accent="sky" />
-          <AstroStatCard label="Astrologer earnings" value={formatINR(stats.totalEarning ?? 0)} accent="amber" />
+          <AstroStatCard
+            label="Astrologer earnings"
+            value={formatINR(stats.totalEarning ?? 0)}
+            accent="amber"
+            sub={stats.freeSessions ? `${stats.freeSessions} free session(s) excluded` : undefined}
+          />
           <AstroStatCard label="Billed minutes" value={stats.totalBilledMinutes ?? 0} />
         </div>
       )}
@@ -191,7 +197,15 @@ export default function InstantSessions() {
                     <td className={tdClass}>{row.sessionTypeLabel ?? (row.sessionType === 2 ? 'chat' : 'call')}</td>
                     <td className={tdClass}>{row.billedMinutes}</td>
                     <td className={tdClass}>{formatINR(row.amount)}</td>
-                    <td className={tdClass}>{formatINR(row.earning)}</td>
+                    <td className={tdClass}>
+                      {row.isFree ? (
+                        <span className="inline-flex items-center gap-2">
+                          <FreeFeeBadge source="admin" /> {formatINR(0)}
+                        </span>
+                      ) : (
+                        formatINR(row.earning)
+                      )}
+                    </td>
                     <td className={tdClass}>{formatAstroDate(row.endDateTime)}</td>
                   </tr>
                 ))

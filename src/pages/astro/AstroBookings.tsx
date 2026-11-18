@@ -22,6 +22,7 @@ import {
   tdClass,
 } from './components/astroUi';
 import { getBookingStatusLabel } from './bookingLabels';
+import { FreeFeeBadge } from './components/AstrologerFeeCard';
 
 const TABS: { key: string; label: string; endpoint: BookingListEndpoint }[] = [
   { key: 'all', label: 'All', endpoint: '/bookings' },
@@ -129,6 +130,11 @@ export default function AstroBookings() {
                       <td className={tdClass}><SessionTypeBadge type={b.sessionType} /></td>
                       <td className={tdClass}>
                         <BookingStatusPill status={b.displayStatus} />
+                        {b.isAstrologerFeeFree && (
+                          <span className="ml-2 align-middle">
+                            <FreeFeeBadge />
+                          </span>
+                        )}
                       </td>
                       <td className={tdClass}>{formatAstroDate(b.startDateTime)}</td>
                       <td className={tdClass}>

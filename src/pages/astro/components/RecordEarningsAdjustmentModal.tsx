@@ -27,11 +27,20 @@ export default function RecordEarningsAdjustmentModal({
   astrologerUserId,
   astrologerName,
   direction,
-  sessions,
+  sessions: allSessions,
   initialBookingId,
   onSuccess,
   onError,
 }: Props) {
+  // Session adjustments only apply to paid booking sessions (not instant / free ones).
+  const sessions = useMemo(
+    () =>
+      allSessions.filter(
+        (s): s is AstroCompletedSession & { bookingId: number } =>
+          s.kind !== 'instant' && s.bookingId != null && !s.isFree
+      ),
+    [allSessions]
+  );
   const [amountType, setAmountType] =
     useState<AstroEarningsAdjustmentAmountType>('custom');
   const [customAmount, setCustomAmount] = useState('');
