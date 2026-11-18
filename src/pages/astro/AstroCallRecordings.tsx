@@ -36,6 +36,7 @@ export default function AstroCallRecordings() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
+  const [callType, setCallType] = useState<'' | 'booking' | 'instant'>('');
   const [userId, setUserId] = useState('');
   const [astrologerId, setAstrologerId] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -63,6 +64,7 @@ export default function AstroCallRecordings() {
         sortOrder,
         search: search || undefined,
         status: (status || undefined) as CallRecordingStatus,
+        source: callType || undefined,
         userId: userId ? Number(userId) : undefined,
         listenerId: astrologerId ? Number(astrologerId) : undefined,
         phoneNumber: phoneNumber || undefined,
@@ -82,7 +84,7 @@ export default function AstroCallRecordings() {
     } finally {
       setLoading(false);
     }
-  }, [astrologerId, endDate, page, phoneNumber, search, sortBy, sortOrder, startDate, status, userId]);
+  }, [astrologerId, callType, endDate, page, phoneNumber, search, sortBy, sortOrder, startDate, status, userId]);
 
   useEffect(() => {
     void load();
@@ -92,6 +94,7 @@ export default function AstroCallRecordings() {
     setSearchInput('');
     setSearch('');
     setStatus('');
+    setCallType('');
     setUserId('');
     setAstrologerId('');
     setPhoneNumber('');
@@ -100,14 +103,14 @@ export default function AstroCallRecordings() {
     setPage(1);
   };
 
-  const hasFilters = Boolean(search || status || userId || astrologerId || phoneNumber || startDate || endDate);
+  const hasFilters = Boolean(search || status || callType || userId || astrologerId || phoneNumber || startDate || endDate);
   const playableCount = items.filter((r) => r.status === 'completed' && r.recordingUrl).length;
 
   return (
     <div className="space-y-6">
       <AstroPageHeader
         title="Call recordings"
-        description="Agora cloud recordings for StarPower user ↔ astrologer booking calls."
+        description="Agora cloud recordings for StarPower user ↔ astrologer booking and instant calls."
       />
 
       {error && <AstroAlert type="error" message={error} onDismiss={() => setError(null)} />}
@@ -142,6 +145,15 @@ export default function AstroCallRecordings() {
             {RECORDING_STATUSES.map((s) => (
               <option key={s} value={s}>{RECORDING_STATUS_LABELS[s]}</option>
             ))}
+          </select>
+          <select
+            value={callType}
+            onChange={(e) => { setCallType(e.target.value as '' | 'booking' | 'instant'); setPage(1); }}
+            className={inputClass}
+          >
+            <option value="">All call types</option>
+            <option value="booking">Booking calls</option>
+            <option value="instant">Instant calls</option>
           </select>
           <input
             type="text"
@@ -194,10 +206,10 @@ export default function AstroCallRecordings() {
       ) : items.length === 0 ? (
         <div className={`${astroCard} px-6 py-16 text-center`}>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {hasFilters ? 'No recordings match your filters' : 'No booking call recordings yet'}
+            {hasFilters ? 'No recordings match your filters' : 'No call recordings yet'}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Recordings appear when booking voice calls capture Agora cloud audio.
+            Recordings appear when StarPower voice calls capture Agora cloud audio.
           </p>
         </div>
       ) : (
@@ -253,6 +265,11 @@ function RecordingRow({ recording }: { recording: CallRecording }) {
             {recording.bookingId != null && (
               <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
                 Booking #{recording.bookingId}
+              </span>
+            )}
+            {recording.kind === 'instant' && (
+              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
+                Instant call
               </span>
             )}
             {hasPlayback && (

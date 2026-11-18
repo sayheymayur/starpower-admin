@@ -30,8 +30,9 @@ export interface CallRecording {
   startedAt: string | null;
   stoppedAt: string | null;
   createdAt: string;
-  kind?: 'booking' | 'listener';
+  kind?: 'booking' | 'instant' | 'listener';
   bookingId?: number | null;
+  instantSessionId?: number | null;
   session: CallRecordingSession | null;
   user: CallRecordingParticipant | null;
   listener: CallRecordingParticipant | null;
@@ -61,6 +62,8 @@ export interface CallRecordingListParams {
   userPhone?: string;
   listenerPhone?: string;
   status?: CallRecordingStatus;
+  /** Server default for StarPower is booking + instant; narrow with booking or instant */
+  source?: 'booking' | 'instant';
   sessionUuid?: string;
   channelName?: string;
   startDate?: string;
@@ -80,7 +83,7 @@ interface DetailResponse {
   message?: string;
 }
 
-/** StarPower booking recordings (gateway: /api/dashboard/api/astro/call-recordings) */
+/** StarPower booking + instant astrologer recordings (gateway: /api/dashboard/api/astro/call-recordings) */
 const BASE = `${API_CONFIG.BASE_URL}/astro/call-recordings`;
 
 function buildQuery(params?: CallRecordingListParams): string {

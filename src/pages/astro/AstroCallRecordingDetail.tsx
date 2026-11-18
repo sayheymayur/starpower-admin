@@ -105,6 +105,9 @@ export default function AstroCallRecordingDetail() {
           {recording.bookingId != null && (
             <span className="text-sm text-gray-500">Booking #{recording.bookingId}</span>
           )}
+          {recording.kind === 'instant' && (
+            <span className="text-sm text-gray-500">Instant call</span>
+          )}
         </div>
       </div>
 
