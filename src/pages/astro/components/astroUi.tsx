@@ -328,9 +328,9 @@ export function FreeSessionBadge() {
   return (
     <span
       title="Free first session (system)"
-      className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+      className="font-semibold text-emerald-600 dark:text-emerald-400"
     >
-      Free
+      FREE
     </span>
   );
 }

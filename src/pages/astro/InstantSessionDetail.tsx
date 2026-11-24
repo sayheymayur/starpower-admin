@@ -56,19 +56,8 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Status" value={<InstantSessionStatusBadge status={data.status} />} />
             <AstroInfoRow label="Duration" value={formatCallDuration(data.durationSeconds)} />
             <AstroInfoRow label="Billed minutes" value={data.billedMinutes} />
-            <AstroInfoRow label="Amount" value={formatINR(data.amount)} />
-            <AstroInfoRow
-              label="Earning"
-              value={
-                data.isFree ? (
-                  <span className="inline-flex items-center gap-2">
-                    <FreeSessionBadge /> {formatINR(0)}
-                  </span>
-                ) : (
-                  formatINR(data.earning)
-                )
-              }
-            />
+            <AstroInfoRow label="Amount" value={data.isFree ? <FreeSessionBadge /> : formatINR(data.amount)} />
+            <AstroInfoRow label="Earning" value={data.isFree ? <FreeSessionBadge /> : formatINR(data.earning)} />
           </AstroSectionCard>
           <AstroSectionCard title="Parties & timing">
             <AstroInfoRow label="User" value={data.userName ? `${data.userName} (#${data.userId})` : data.userId} />

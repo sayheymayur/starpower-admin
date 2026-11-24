@@ -197,16 +197,8 @@ export default function InstantSessions() {
                     <td className={tdClass}><InstantSessionStatusBadge status={row.status} /></td>
                     <td className={tdClass}>{formatCallDuration(row.durationSeconds)}</td>
                     <td className={tdClass}>{row.billedMinutes}</td>
-                    <td className={tdClass}>{formatINR(row.amount)}</td>
-                    <td className={tdClass}>
-                      {row.isFree ? (
-                        <span className="inline-flex items-center gap-2">
-                          <FreeSessionBadge /> {formatINR(0)}
-                        </span>
-                      ) : (
-                        formatINR(row.earning)
-                      )}
-                    </td>
+                    <td className={tdClass}>{row.isFree ? <FreeSessionBadge /> : formatINR(row.amount)}</td>
+                    <td className={tdClass}>{row.isFree ? <FreeSessionBadge /> : formatINR(row.earning)}</td>
                     <td className={tdClass}>{formatAstroDate(row.endDateTime)}</td>
                   </tr>
                 ))
