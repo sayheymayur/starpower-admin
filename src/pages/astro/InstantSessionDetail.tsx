@@ -9,7 +9,10 @@ import {
   AstroLoading,
   AstroPageHeader,
   AstroSectionCard,
+  InstantSessionStatusBadge,
   formatAstroDate,
+  formatCallDuration,
+  FreeSessionBadge,
   formatINR,
 } from './components/astroUi';
 
@@ -50,10 +53,22 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Session ID" value={data.sessionId} mono />
             <AstroInfoRow label="Txn ID" value={data.txnId} />
             <AstroInfoRow label="Type" value={data.sessionTypeLabel ?? data.sessionType} />
-            <AstroInfoRow label="Status" value={data.status ?? 'completed'} />
+            <AstroInfoRow label="Status" value={<InstantSessionStatusBadge status={data.status} />} />
+            <AstroInfoRow label="Duration" value={formatCallDuration(data.durationSeconds)} />
             <AstroInfoRow label="Billed minutes" value={data.billedMinutes} />
             <AstroInfoRow label="Amount" value={formatINR(data.amount)} />
-            <AstroInfoRow label="Earning" value={formatINR(data.earning)} />
+            <AstroInfoRow
+              label="Earning"
+              value={
+                data.isFree ? (
+                  <span className="inline-flex items-center gap-2">
+                    <FreeSessionBadge /> {formatINR(0)}
+                  </span>
+                ) : (
+                  formatINR(data.earning)
+                )
+              }
+            />
           </AstroSectionCard>
           <AstroSectionCard title="Parties & timing">
             <AstroInfoRow label="User" value={data.userName ? `${data.userName} (#${data.userId})` : data.userId} />
@@ -65,6 +80,7 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Requested" value={formatAstroDate(data.requestDateTime)} />
             <AstroInfoRow label="Started" value={formatAstroDate(data.startDateTime)} />
             <AstroInfoRow label="Ended" value={formatAstroDate(data.endDateTime)} />
+            <AstroInfoRow label="Remark" value={data.remark} />
           </AstroSectionCard>
         </div>
       )}

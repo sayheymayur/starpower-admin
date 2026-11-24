@@ -475,6 +475,13 @@ export const astroAPI = {
     ),
 };
 
+/**
+ * completed: ended normally. in_progress: started, not ended yet.
+ * cancelled_after_start: started but cancelled instead of ended (calls cut off by the old
+ * cancel-after-start bug; no end time and no billing record).
+ */
+export type AstroInstantSessionStatus = 'completed' | 'in_progress' | 'cancelled_after_start';
+
 export interface AstroInstantSession {
   kind: 'instant';
   txnId: number | null;
@@ -489,11 +496,18 @@ export interface AstroInstantSession {
   billedMinutes: number;
   amount: number;
   earning: number;
+  isFree?: boolean;
+  feeLabel?: 'Free' | null;
+  /** Set when the call was the user's free first session. */
+  freeSource?: 'free_grant' | null;
+  /** Start to end; null while in progress or when the call never ended cleanly. */
+  durationSeconds?: number | null;
+  remark?: string | null;
   requestDateTime?: string | null;
   startDateTime: string | null;
   endDateTime: string | null;
   createdDateTime?: string | null;
-  status?: string;
+  status?: AstroInstantSessionStatus;
 }
 
 export interface AstroInstantSessionStats {

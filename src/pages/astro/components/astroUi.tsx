@@ -309,6 +309,40 @@ export function BookingStatusPill({ status }: { status: string }) {
   );
 }
 
+const INSTANT_SESSION_STATUS: Record<string, { label: string; color: 'success' | 'warning' | 'error' }> = {
+  completed: { label: 'Completed', color: 'success' },
+  in_progress: { label: 'In progress', color: 'warning' },
+  cancelled_after_start: { label: 'Cut off (no end recorded)', color: 'error' },
+};
+
+export function InstantSessionStatusBadge({ status }: { status: string | null | undefined }) {
+  const entry = INSTANT_SESSION_STATUS[status ?? 'completed'] ?? { label: status ?? '—', color: 'warning' as const };
+  return (
+    <Badge color={entry.color} size="sm">
+      {entry.label}
+    </Badge>
+  );
+}
+
+export function FreeSessionBadge() {
+  return (
+    <span
+      title="Free first session (system)"
+      className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+    >
+      Free
+    </span>
+  );
+}
+
+/** 270 → "4m 30s". */
+export function formatCallDuration(seconds: number | null | undefined) {
+  if (seconds == null || !Number.isFinite(seconds)) return '—';
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
+
 export function PaymentStatusBadge({
   status,
 }: {
