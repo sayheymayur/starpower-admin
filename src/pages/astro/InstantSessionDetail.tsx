@@ -14,7 +14,9 @@ import {
   AstroLoading,
   AstroPageHeader,
   AstroSectionCard,
+  InstantSessionStatusBadge,
   formatAstroDate,
+  formatCallDuration,
   formatINR,
 } from './components/astroUi';
 
@@ -62,7 +64,8 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Session ID" value={data.sessionId} mono />
             <AstroInfoRow label="Txn ID" value={data.txnId} />
             <AstroInfoRow label="Type" value={data.sessionTypeLabel ?? data.sessionType} />
-            <AstroInfoRow label="Status" value={data.status ?? 'completed'} />
+            <AstroInfoRow label="Status" value={<InstantSessionStatusBadge status={data.status} />} />
+            <AstroInfoRow label="Duration" value={formatCallDuration(data.durationSeconds)} />
             <AstroInfoRow label="Billed minutes" value={data.billedMinutes} />
             <AstroInfoRow label="Amount" value={formatINR(data.amount)} />
             <AstroInfoRow
@@ -70,7 +73,7 @@ export default function InstantSessionDetail() {
               value={
                 data.isFree ? (
                   <span className="inline-flex items-center gap-2">
-                    <FreeFeeBadge source="admin" /> {formatINR(0)}
+                    <FreeFeeBadge source={data.freeSource ?? 'admin'} /> {formatINR(0)}
                   </span>
                 ) : (
                   formatINR(data.earning)
@@ -88,6 +91,7 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Requested" value={formatAstroDate(data.requestDateTime)} />
             <AstroInfoRow label="Started" value={formatAstroDate(data.startDateTime)} />
             <AstroInfoRow label="Ended" value={formatAstroDate(data.endDateTime)} />
+            <AstroInfoRow label="Remark" value={data.remark} />
           </AstroSectionCard>
           <AstrologerFeeCard
             fee={data.astrologerFee}

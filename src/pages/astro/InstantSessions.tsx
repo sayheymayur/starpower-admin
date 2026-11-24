@@ -13,8 +13,10 @@ import {
   AstroPageHeader,
   AstroPaginationBar,
   AstroStatCard,
+  InstantSessionStatusBadge,
   astroBtnOutline,
   formatAstroDate,
+  formatCallDuration,
   formatINR,
   thClass,
   tdClass,
@@ -72,7 +74,7 @@ export default function InstantSessions() {
     <div className="space-y-6">
       <AstroPageHeader
         title="Instant sessions"
-        description="Completed instant call and chat history across StarPower."
+        description="Instant call and chat history across StarPower, including free first sessions."
       />
 
       {error && <AstroAlert type="error" message={error} onDismiss={() => setError(null)} />}
@@ -145,7 +147,9 @@ export default function InstantSessions() {
                 <th className={thClass}>User</th>
                 <th className={thClass}>Astrologer</th>
                 <th className={thClass}>Type</th>
-                <th className={thClass}>Minutes</th>
+                <th className={thClass}>Status</th>
+                <th className={thClass}>Duration</th>
+                <th className={thClass}>Billed min</th>
                 <th className={thClass}>Amount</th>
                 <th className={thClass}>Earning</th>
                 <th className={thClass}>Ended</th>
@@ -154,7 +158,7 @@ export default function InstantSessions() {
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className={`${tdClass} text-center text-gray-500`}>
+                  <td colSpan={10} className={`${tdClass} text-center text-gray-500`}>
                     No instant sessions found
                   </td>
                 </tr>
@@ -195,12 +199,14 @@ export default function InstantSessions() {
                       )}
                     </td>
                     <td className={tdClass}>{row.sessionTypeLabel ?? (row.sessionType === 2 ? 'chat' : 'call')}</td>
+                    <td className={tdClass}><InstantSessionStatusBadge status={row.status} /></td>
+                    <td className={tdClass}>{formatCallDuration(row.durationSeconds)}</td>
                     <td className={tdClass}>{row.billedMinutes}</td>
                     <td className={tdClass}>{formatINR(row.amount)}</td>
                     <td className={tdClass}>
                       {row.isFree ? (
                         <span className="inline-flex items-center gap-2">
-                          <FreeFeeBadge source="admin" /> {formatINR(0)}
+                          <FreeFeeBadge source={row.freeSource ?? 'admin'} /> {formatINR(0)}
                         </span>
                       ) : (
                         formatINR(row.earning)
