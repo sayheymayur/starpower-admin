@@ -8,6 +8,7 @@ import {
 } from '../../services/api/astro';
 import AstrologerFeeCard, { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { SessionFeedbackCard } from './components/SessionFeedbackCard';
+import { EndedByText } from './components/astroUi';
 import {
   AstroAlert,
   AstroBackLink,
@@ -92,6 +93,9 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Requested" value={formatAstroDate(data.requestDateTime)} />
             <AstroInfoRow label="Started" value={formatAstroDate(data.startDateTime)} />
             <AstroInfoRow label="Ended" value={formatAstroDate(data.endDateTime)} />
+            {data.endDateTime && (
+              <AstroInfoRow label="Ended by" value={<EndedByText endedBy={data.endedBy} endReason={data.endReason} />} />
+            )}
             <AstroInfoRow label="Remark" value={data.remark} />
           </AstroSectionCard>
           <SessionFeedbackCard feedback={data.feedback} />

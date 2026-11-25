@@ -24,6 +24,7 @@ import {
 import { getBookingStatusLabel } from './bookingLabels';
 import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { FeedbackStarsCell } from './components/SessionFeedbackCard';
+import { EndedByText } from './components/astroUi';
 
 const TABS: { key: string; label: string; endpoint: BookingListEndpoint }[] = [
   { key: 'all', label: 'All', endpoint: '/bookings' },
@@ -119,6 +120,7 @@ export default function AstroBookings() {
                     <th className={thClass}>Status</th>
                     <th className={thClass}>Scheduled</th>
                     <th className={thClass}>Payment</th>
+                    <th className={thClass}>Ended by</th>
                     <th className={thClass}>Rating</th>
                     <th className={thClass}></th>
                   </tr>
@@ -150,6 +152,9 @@ export default function AstroBookings() {
                         ) : (
                           '—'
                         )}
+                      </td>
+                      <td className={tdClass}>
+                        {b.status === 'completed' ? <EndedByText endedBy={b.endedBy} endReason={b.endReason} /> : <span className="text-gray-400">—</span>}
                       </td>
                       <td className={tdClass}><FeedbackStarsCell feedback={b.feedback} /></td>
                       <td className={tdClass}>

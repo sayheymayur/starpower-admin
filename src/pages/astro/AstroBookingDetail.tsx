@@ -30,6 +30,7 @@ import {
   formatINR,
   tdClass,
   thClass,
+  EndedByText,
 } from './components/astroUi';
 
 const TERMINAL_CANCEL_STATUSES = new Set([
@@ -475,6 +476,9 @@ export default function AstroBookingDetailPage() {
                 <AstroInfoRow label="Cancel source" value="Admin / server" />
               )}
               {duration && <AstroInfoRow label="Duration" value={duration} />}
+              {isCompleted && (
+                <AstroInfoRow label="Ended by" value={<EndedByText endedBy={booking.endedBy} endReason={booking.endReason} />} />
+              )}
             </div>
           </AstroSectionCard>
 

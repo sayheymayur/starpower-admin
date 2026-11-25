@@ -146,6 +146,9 @@ export interface AstroBooking {
   bookingId: number;
   sessionId: string | null;
   feedback?: AstroSessionFeedback | null;
+  /** user | partner | system | admin — null when not recorded. */
+  endedBy?: string | null;
+  endReason?: string | null;
   sessionType: 1 | 2;
   status: string;
   displayStatus: string;
@@ -519,6 +522,8 @@ export type AstroInstantSessionStatus = 'completed' | 'in_progress' | 'cancelled
 export interface AstroInstantSession {
   kind: 'instant';
   feedback?: AstroSessionFeedback | null;
+  endedBy?: string | null;
+  endReason?: string | null;
   txnId: number | null;
   sessionId: string | null;
   userId: number | null;

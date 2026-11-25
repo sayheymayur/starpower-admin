@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { FeedbackStarsCell } from './components/SessionFeedbackCard';
+import { EndedByText } from './components/astroUi';
 import { ApiError } from '../../services/api/base';
 import {
   astroAPI,
@@ -155,12 +156,13 @@ export default function InstantSessions() {
                 <th className={thClass}>Earning</th>
                 <th className={thClass}>Rating</th>
                 <th className={thClass}>Ended</th>
+                <th className={thClass}>Ended by</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className={`${tdClass} text-center text-gray-500`}>
+                  <td colSpan={12} className={`${tdClass} text-center text-gray-500`}>
                     No instant sessions found
                   </td>
                 </tr>
@@ -216,6 +218,9 @@ export default function InstantSessions() {
                     </td>
                     <td className={tdClass}><FeedbackStarsCell feedback={row.feedback} /></td>
                     <td className={tdClass}>{formatAstroDate(row.endDateTime)}</td>
+                    <td className={tdClass}>
+                      {row.endDateTime ? <EndedByText endedBy={row.endedBy} endReason={row.endReason} /> : <span className="text-gray-400">—</span>}
+                    </td>
                   </tr>
                 ))
               )}

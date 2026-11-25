@@ -578,3 +578,32 @@ export function formatCommissionRate(rate: number | null | undefined) {
   if (rate == null) return '40%';
   return `${Math.round(rate * 100)}%`;
 }
+
+const END_REASON_TEXT: Record<string, string> = {
+  low_balance: 'wallet balance ran out',
+  time_limit: 'time limit reached',
+  slot_ended: 'booking slot ended',
+  error: 'service error',
+  cleanup: 'cleanup after restart',
+};
+
+/** "Ended by" label for a session: User / Astrologer / Admin / System — reason / Not recorded. */
+export function endedByLabel(endedBy?: string | null, endReason?: string | null): string {
+  switch (endedBy) {
+    case 'user': return 'User';
+    case 'partner': return 'Astrologer';
+    case 'admin': return 'Admin';
+    case 'system': {
+      const why = endReason ? END_REASON_TEXT[endReason] : null;
+      return why ? `System — ${why}` : 'System';
+    }
+    default: return 'Not recorded';
+  }
+}
+
+export function EndedByText({ endedBy, endReason }: { endedBy?: string | null; endReason?: string | null }) {
+  const label = endedByLabel(endedBy, endReason);
+  return (
+    <span className={endedBy ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400'}>{label}</span>
+  );
+}
