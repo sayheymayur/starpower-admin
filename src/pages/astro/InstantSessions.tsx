@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { FeedbackStarsCell } from './components/SessionFeedbackCard';
-import { EndedByText, FeeTabs, type FeeFilter } from './components/astroUi';
+import { EndedByText, FeeTabs, INSTANT_SESSION_STATUS_FILTERS, type FeeFilter } from './components/astroUi';
 import { ApiError } from '../../services/api/base';
 import {
   astroAPI,
@@ -38,6 +38,7 @@ export default function InstantSessions() {
   const [endDate, setEndDate] = useState('');
   const [sessionType, setSessionType] = useState('');
   const [fee, setFee] = useState<FeeFilter>('all');
+  const [status, setStatus] = useState('');
 
   const load = useCallback(async () => {
     try {
@@ -52,6 +53,7 @@ export default function InstantSessions() {
         endDate: endDate || undefined,
         sessionType: sessionType ? Number(sessionType) : undefined,
         fee: fee === 'all' ? undefined : fee,
+        status: status || undefined,
       };
       const [listRes, statsRes] = await Promise.all([
         astroAPI.listInstantSessions(params),
@@ -68,7 +70,7 @@ export default function InstantSessions() {
     } finally {
       setLoading(false);
     }
-  }, [page, userId, astrologerId, startDate, endDate, sessionType, fee]);
+  }, [page, userId, astrologerId, startDate, endDate, sessionType, fee, status]);
 
   useEffect(() => {
     void load();
@@ -78,14 +80,22 @@ export default function InstantSessions() {
     <div className="space-y-6">
       <AstroPageHeader
         title="Instant sessions"
-        description="Instant call and chat history across StarPower, including free first sessions."
+        description="Every instant call and chat request across StarPower: connected calls, plus requests that were missed, declined, cancelled or lost."
       />
 
       {error && <AstroAlert type="error" message={error} onDismiss={() => setError(null)} />}
 
       {stats && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <AstroStatCard label="Sessions" value={stats.totalSessions ?? 0} />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <AstroStatCard
+            label="Requests"
+            value={stats.totalRequests ?? stats.totalSessions ?? 0}
+            sub={stats.totalRequests != null
+              ? `${stats.missedRequests ?? 0} missed · ${stats.declinedRequests ?? 0} declined · ${stats.cancelledRequests ?? 0} cancelled`
+                + (stats.noOutcomeRequests ? ` · ${stats.noOutcomeRequests} lost` : '')
+              : undefined}
+          />
+          <AstroStatCard label="Connected sessions" value={stats.totalSessions ?? 0} />
           <AstroStatCard label="Billed amount" value={formatINR(stats.totalAmount ?? 0)} accent="sky" />
           <AstroStatCard
             label="Astrologer earnings"
@@ -113,6 +123,15 @@ export default function InstantSessions() {
             placeholder="Astrologer ID"
             className="w-36 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           />
+          <select
+            value={status}
+            onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          >
+            {INSTANT_SESSION_STATUS_FILTERS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
           <select
             value={sessionType}
             onChange={(e) => { setSessionType(e.target.value); setPage(1); }}
@@ -154,6 +173,7 @@ export default function InstantSessions() {
                 <th className={thClass}>Astrologer</th>
                 <th className={thClass}>Type</th>
                 <th className={thClass}>Status</th>
+                <th className={thClass}>Requested</th>
                 <th className={thClass}>Duration</th>
                 <th className={thClass}>Billed min</th>
                 <th className={thClass}>Amount</th>
@@ -166,12 +186,15 @@ export default function InstantSessions() {
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={12} className={`${tdClass} text-center text-gray-500`}>
+                  <td colSpan={13} className={`${tdClass} text-center text-gray-500`}>
                     No instant sessions found
                   </td>
                 </tr>
               ) : (
-                rows.map((row) => (
+                rows.map((row) => {
+                  const connected = row.connected ?? row.startDateTime != null;
+                  const notApplicable = <span className="text-gray-400">—</span>;
+                  return (
                   <tr key={row.sessionId ?? String(row.txnId)} className="hover:bg-gray-50 dark:hover:bg-white/5">
                     <td className={tdClass}>
                       {row.sessionId ? (
@@ -208,25 +231,23 @@ export default function InstantSessions() {
                     </td>
                     <td className={tdClass}>{row.sessionTypeLabel ?? (row.sessionType === 2 ? 'chat' : 'call')}</td>
                     <td className={tdClass}><InstantSessionStatusBadge status={row.status} /></td>
-                    <td className={tdClass}>{formatCallDuration(row.durationSeconds)}</td>
-                    <td className={tdClass}>{row.billedMinutes}</td>
-                    <td className={tdClass}>{formatINR(row.amount)}</td>
+                    <td className={tdClass}>{formatAstroDate(row.requestDateTime)}</td>
+                    <td className={tdClass}>{connected ? formatCallDuration(row.durationSeconds) : notApplicable}</td>
+                    <td className={tdClass}>{connected ? row.billedMinutes : notApplicable}</td>
                     <td className={tdClass}>
-                      {row.isFree ? (
-                        <span className="inline-flex items-center gap-2">
-                          <FreeFeeBadge source={row.freeSource ?? 'admin'} /> {formatINR(0)}
-                        </span>
-                      ) : (
-                        formatINR(row.earning)
-                      )}
+                      {!connected ? notApplicable : row.isFree ? <FreeFeeBadge source={row.freeSource ?? 'admin'} /> : formatINR(row.amount)}
+                    </td>
+                    <td className={tdClass}>
+                      {!connected ? notApplicable : row.isFree ? <FreeFeeBadge source={row.freeSource ?? 'admin'} /> : formatINR(row.earning)}
                     </td>
                     <td className={tdClass}><FeedbackStarsCell feedback={row.feedback} /></td>
-                    <td className={tdClass}>{formatAstroDate(row.endDateTime)}</td>
+                    <td className={tdClass}>{formatAstroDate(row.endDateTime ?? row.cancelledDateTime ?? null)}</td>
                     <td className={tdClass}>
                       {row.endDateTime ? <EndedByText endedBy={row.endedBy} endReason={row.endReason} /> : <span className="text-gray-400">—</span>}
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>

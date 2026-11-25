@@ -69,18 +69,13 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Status" value={<InstantSessionStatusBadge status={data.status} />} />
             <AstroInfoRow label="Duration" value={formatCallDuration(data.durationSeconds)} />
             <AstroInfoRow label="Billed minutes" value={data.billedMinutes} />
-            <AstroInfoRow label="Amount" value={formatINR(data.amount)} />
+            <AstroInfoRow
+              label="Amount"
+              value={data.isFree ? <FreeFeeBadge source={data.freeSource ?? 'admin'} /> : formatINR(data.amount)}
+            />
             <AstroInfoRow
               label="Earning"
-              value={
-                data.isFree ? (
-                  <span className="inline-flex items-center gap-2">
-                    <FreeFeeBadge source={data.freeSource ?? 'admin'} /> {formatINR(0)}
-                  </span>
-                ) : (
-                  formatINR(data.earning)
-                )
-              }
+              value={data.isFree ? <FreeFeeBadge source={data.freeSource ?? 'admin'} /> : formatINR(data.earning)}
             />
           </AstroSectionCard>
           <AstroSectionCard title="Parties & timing">
@@ -93,6 +88,9 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Requested" value={formatAstroDate(data.requestDateTime)} />
             <AstroInfoRow label="Started" value={formatAstroDate(data.startDateTime)} />
             <AstroInfoRow label="Ended" value={formatAstroDate(data.endDateTime)} />
+            {data.cancelledDateTime && (
+              <AstroInfoRow label="Cancelled" value={formatAstroDate(data.cancelledDateTime)} />
+            )}
             {data.endDateTime && (
               <AstroInfoRow label="Ended by" value={<EndedByText endedBy={data.endedBy} endReason={data.endReason} />} />
             )}

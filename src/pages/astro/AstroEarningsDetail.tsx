@@ -288,7 +288,6 @@ export default function AstroEarningsDetailPage() {
                           {s.isFree ? (
                             <>
                               <FreeFeeBadge source={s.freeSource} />
-                              <span>{formatINR(0)}</span>
                               {s.waivedAmount != null && s.waivedAmount > 0 && (
                                 <span className="text-xs text-gray-500 line-through">
                                   {formatINR(s.waivedAmount)}

@@ -309,11 +309,27 @@ export function BookingStatusPill({ status }: { status: string }) {
   );
 }
 
-const INSTANT_SESSION_STATUS: Record<string, { label: string; color: 'success' | 'warning' | 'error' }> = {
+type InstantStatusColor = 'success' | 'warning' | 'error' | 'info' | 'light' | 'dark';
+
+const INSTANT_SESSION_STATUS: Record<string, { label: string; color: InstantStatusColor }> = {
   completed: { label: 'Completed', color: 'success' },
   in_progress: { label: 'In progress', color: 'warning' },
   cancelled_after_start: { label: 'Cut off (no end recorded)', color: 'error' },
+  ringing: { label: 'Ringing', color: 'info' },
+  missed: { label: 'Missed (no answer)', color: 'warning' },
+  declined: { label: 'Declined by astrologer', color: 'error' },
+  cancelled: { label: 'Cancelled by user', color: 'light' },
+  failed: { label: 'Failed to start', color: 'error' },
+  no_outcome: { label: 'No outcome (lost)', color: 'dark' },
 };
+
+/** Options for the Instant sessions status filter. */
+export const INSTANT_SESSION_STATUS_FILTERS: { value: string; label: string }[] = [
+  { value: '', label: 'All requests' },
+  { value: 'connected', label: 'Connected calls' },
+  { value: 'not_connected', label: 'Not connected' },
+  ...Object.entries(INSTANT_SESSION_STATUS).map(([value, { label }]) => ({ value, label })),
+];
 
 export function InstantSessionStatusBadge({ status }: { status: string | null | undefined }) {
   const entry = INSTANT_SESSION_STATUS[status ?? 'completed'] ?? { label: status ?? '—', color: 'warning' as const };

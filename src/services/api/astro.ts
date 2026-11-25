@@ -513,11 +513,24 @@ export const astroAPI = {
 };
 
 /**
- * completed: ended normally. in_progress: started, not ended yet.
- * cancelled_after_start: started but cancelled instead of ended (calls cut off by the old
- * cancel-after-start bug; no end time and no billing record).
+ * Connected: completed (ended normally), in_progress (started, not ended yet), cancelled_after_start
+ * (cut off by the old cancel-after-start bug; no end time and no billing record).
+ * Never connected: ringing, missed (ring timeout), declined (by astrologer), cancelled (by user),
+ * failed (server could not set it up), no_outcome (lost, e.g. server restart).
  */
-export type AstroInstantSessionStatus = 'completed' | 'in_progress' | 'cancelled_after_start';
+export type AstroInstantSessionStatus =
+  | 'completed'
+  | 'in_progress'
+  | 'cancelled_after_start'
+  | 'ringing'
+  | 'missed'
+  | 'declined'
+  | 'cancelled'
+  | 'failed'
+  | 'no_outcome';
+
+/** List filter: one status, or connected / not_connected. */
+export type AstroInstantSessionStatusFilter = AstroInstantSessionStatus | 'connected' | 'not_connected';
 
 export interface AstroInstantSession {
   kind: 'instant';
@@ -552,6 +565,9 @@ export interface AstroInstantSession {
   startDateTime: string | null;
   endDateTime: string | null;
   createdDateTime?: string | null;
+  cancelledDateTime?: string | null;
+  /** False for requests the astrologer never accepted (no billing or duration). */
+  connected?: boolean;
   status?: AstroInstantSessionStatus;
 }
 
@@ -595,4 +611,11 @@ export interface AstroInstantSessionStats {
   freeSessions?: number;
   totalBilledMinutes: number;
   bySessionType?: Record<string, number>;
+  /** Every request in the window, connected or not. */
+  totalRequests?: number;
+  missedRequests?: number;
+  declinedRequests?: number;
+  cancelledRequests?: number;
+  failedRequests?: number;
+  noOutcomeRequests?: number;
 }
