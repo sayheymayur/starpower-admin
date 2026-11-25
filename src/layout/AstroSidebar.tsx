@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSidebar } from '../context/SidebarContext';
 import { can, canAny } from '../utils/scopes';
 import { isProductRoot } from '../utils/authRoles';
+import { setAccountsMode, useAccountsMode } from '../utils/accountsMode';
 
 type NavItem = {
   name: string;
@@ -11,6 +12,8 @@ type NavItem = {
   /** Any of these scopes grants visibility; omit = always for authenticated users */
   scopes?: string[];
   adminOnly?: boolean;
+  /** Opens the page in test-accounts mode. */
+  test?: boolean;
 };
 
 type NavSection = {
@@ -83,6 +86,21 @@ const navSections: NavSection[] = [
     ],
   },
   {
+    label: 'Test accounts',
+    items: [
+      { name: 'Test overview', path: '/astro', test: true, scopes: ['astro.analytics.overview:read', 'astro.*:read'] },
+      { name: 'Test users', path: '/astro/users', test: true, scopes: ['astro.users:read', 'astro.*:read'] },
+      { name: 'Test astrologers', path: '/astro/astrologers', exact: true, test: true, scopes: ['astro.astrologers:read', 'astro.*:read'] },
+      { name: 'Test bookings', path: '/astro/bookings', test: true, scopes: ['astro.bookings:read', 'booking.*:read', 'astro.*:read'] },
+      { name: 'Test instant sessions', path: '/astro/instant-sessions', test: true, scopes: ['astro.instant-sessions:read', 'astro.*:read'] },
+      { name: 'Test call recordings', path: '/astro/call-recordings', test: true, scopes: ['astro.call-recordings:read', 'astro.*:read'] },
+      { name: 'Test payments', path: '/astro/transactions', test: true, scopes: ['astro.transactions:read', 'astro.*:read'] },
+      { name: 'Test payouts', path: '/astro/payouts', test: true, scopes: ['astro.payouts:read', 'astro.*:read'] },
+      { name: 'Test invoices', path: '/astro/invoices', test: true, scopes: ['astro.invoices:read', 'astro.*:read'] },
+      { name: 'Test reviews', path: '/astro/ratings', test: true, scopes: ['astro.ratings:read', 'astro.*:read'] },
+    ],
+  },
+  {
     label: 'Admin',
     items: [
       { name: 'Accounts', path: '/admins', adminOnly: true, scopes: ['auth.admins:read', 'auth.*:read'] },
@@ -98,8 +116,10 @@ const AstroSidebar: React.FC = () => {
   const root = isProductRoot(user) || isAdmin || scopes.includes('*');
 
   const showLabels = isExpanded || isHovered || isMobileOpen;
+  const accountsMode = useAccountsMode();
 
   const isActive = (item: NavItem) => {
+    if (Boolean(item.test) !== (accountsMode === 'test')) return false;
     if (item.path === '/astro') return location.pathname === '/astro';
     if (item.exact) {
       const [pathname, search] = item.path.split('?');
@@ -157,8 +177,9 @@ const AstroSidebar: React.FC = () => {
             <div className="space-y-1">
               {section.items.map((item) => (
                 <Link
-                  key={item.path}
+                  key={`${item.test ? 'test:' : ''}${item.path}`}
                   to={item.path}
+                  onClick={() => setAccountsMode(item.test ? 'test' : 'real')}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                     isActive(item)
                       ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400'

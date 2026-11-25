@@ -1,10 +1,12 @@
-import { Outlet } from 'react-router';
+import { Link, Outlet } from 'react-router';
+import { setAccountsMode, useAccountsMode } from '../utils/accountsMode';
 import { SidebarProvider, useSidebar } from '../context/SidebarContext';
 import AstroSidebar from './AstroSidebar';
 import Backdrop from './Backdrop';
 
 const AstroLayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen, toggleMobileSidebar } = useSidebar();
+  const accountsMode = useAccountsMode();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 xl:flex">
@@ -35,8 +37,19 @@ const AstroLayoutContent: React.FC = () => {
             </div>
           </div>
         </header>
+        {accountsMode === 'test' && (
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-300 bg-amber-100 px-4 py-2 text-sm text-amber-900 md:px-6 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-200">
+            <span>
+              <strong>TEST DATA</strong> — only test accounts are shown here. Not counted in revenue or analytics.
+            </span>
+            <Link to="/astro" onClick={() => setAccountsMode('real')} className="font-medium underline">
+              Back to real data
+            </Link>
+          </div>
+        )}
         <main className="p-4 md:p-6 max-w-(--breakpoint-2xl) mx-auto">
-          <Outlet />
+          {/* Remount pages when switching real/test so every list reloads. */}
+          <Outlet key={accountsMode} />
         </main>
       </div>
     </div>
