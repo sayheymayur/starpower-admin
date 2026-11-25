@@ -37,13 +37,21 @@ export default function AstroBankDetail() {
       try {
         setLoading(true);
         const res = await astroFinanceAPI.getBank(Number(userId));
-        setBank(res.data);
-        setFullName(res.data.fullName ?? res.data.astrologerName ?? '');
-        setAccountNo(res.data.accountNumber ?? '');
-        setIfscCode(res.data.ifscCode ?? '');
-        setMicr(res.data.micr ?? '');
-        setStatus(res.data.status ?? 1);
-        setIsNew(false);
+        // The API returns the astrologer at the top level and the bank record under
+        // `bankDetails` (null when the astrologer has not added one yet).
+        const details = res.data.bankDetails ?? null;
+        setBank({
+          ...res.data,
+          ...(details ?? {}),
+          astrologerName: details?.astrologerName || res.data.astrologerName,
+          mobileNo: details?.mobileNo || res.data.mobileNo,
+        });
+        setFullName(details?.fullName ?? res.data.astrologerName ?? '');
+        setAccountNo(details?.accountNumber ?? '');
+        setIfscCode(details?.ifscCode ?? '');
+        setMicr(details?.micr ?? '');
+        setStatus(details?.status ?? 1);
+        setIsNew(!details);
       } catch (e) {
         if (e instanceof ApiError && e.status === 404) {
           setIsNew(true);
