@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { FeedbackStarsCell } from './components/SessionFeedbackCard';
-import { EndedByText } from './components/astroUi';
+import { EndedByText, FeeTabs, type FeeFilter } from './components/astroUi';
 import { ApiError } from '../../services/api/base';
 import {
   astroAPI,
@@ -37,6 +37,7 @@ export default function InstantSessions() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sessionType, setSessionType] = useState('');
+  const [fee, setFee] = useState<FeeFilter>('all');
 
   const load = useCallback(async () => {
     try {
@@ -50,6 +51,7 @@ export default function InstantSessions() {
         startDate: startDate || undefined,
         endDate: endDate || undefined,
         sessionType: sessionType ? Number(sessionType) : undefined,
+        fee: fee === 'all' ? undefined : fee,
       };
       const [listRes, statsRes] = await Promise.all([
         astroAPI.listInstantSessions(params),
@@ -66,7 +68,7 @@ export default function InstantSessions() {
     } finally {
       setLoading(false);
     }
-  }, [page, userId, astrologerId, startDate, endDate, sessionType]);
+  }, [page, userId, astrologerId, startDate, endDate, sessionType, fee]);
 
   useEffect(() => {
     void load();
@@ -94,6 +96,8 @@ export default function InstantSessions() {
           <AstroStatCard label="Billed minutes" value={stats.totalBilledMinutes ?? 0} />
         </div>
       )}
+
+      <FeeTabs value={fee} onChange={(next) => { setFee(next); setPage(1); }} />
 
       <div className={`${astroCard} p-4`}>
         <div className="flex flex-wrap gap-3">

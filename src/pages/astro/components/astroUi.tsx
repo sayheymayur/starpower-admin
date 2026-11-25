@@ -607,3 +607,33 @@ export function EndedByText({ endedBy, endReason }: { endedBy?: string | null; e
     <span className={endedBy ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400'}>{label}</span>
   );
 }
+
+export type FeeFilter = 'all' | 'paid' | 'free';
+
+const FEE_TABS: { key: FeeFilter; label: string }[] = [
+  { key: 'all', label: 'All sessions' },
+  { key: 'paid', label: 'Paid' },
+  { key: 'free', label: 'Free (first session)' },
+];
+
+/** Paid vs free (the customer's free first session) — separate tabs for revenue analysis. */
+export function FeeTabs({ value, onChange }: { value: FeeFilter; onChange: (next: FeeFilter) => void }) {
+  return (
+    <div className="inline-flex rounded-lg border border-gray-200 bg-white p-0.5 dark:border-gray-700 dark:bg-gray-900">
+      {FEE_TABS.map((t) => (
+        <button
+          key={t.key}
+          type="button"
+          onClick={() => onChange(t.key)}
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            value === t.key
+              ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+              : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+          }`}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+}

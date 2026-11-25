@@ -24,7 +24,7 @@ import {
 import { getBookingStatusLabel } from './bookingLabels';
 import { FreeFeeBadge } from './components/AstrologerFeeCard';
 import { FeedbackStarsCell } from './components/SessionFeedbackCard';
-import { EndedByText } from './components/astroUi';
+import { EndedByText, FeeTabs, type FeeFilter } from './components/astroUi';
 
 const TABS: { key: string; label: string; endpoint: BookingListEndpoint }[] = [
   { key: 'all', label: 'All', endpoint: '/bookings' },
@@ -37,6 +37,7 @@ const TABS: { key: string; label: string; endpoint: BookingListEndpoint }[] = [
 
 export default function AstroBookings() {
   const [tab, setTab] = useState('all');
+  const [fee, setFee] = useState<FeeFilter>('all');
   const [bookings, setBookings] = useState<AstroBooking[]>([]);
   const [pagination, setPagination] = useState<AstroPagination | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,6 +55,7 @@ export default function AstroBookings() {
         page,
         limit: 20,
         search: search || undefined,
+        fee: fee === 'all' ? undefined : fee,
       });
       setBookings(res.data);
       setPagination(res.pagination);
@@ -62,7 +64,7 @@ export default function AstroBookings() {
     } finally {
       setLoading(false);
     }
-  }, [endpoint, page, search]);
+  }, [endpoint, page, search, fee]);
 
   useEffect(() => {
     void load();
@@ -87,6 +89,8 @@ export default function AstroBookings() {
           </button>
         ))}
       </div>
+
+      <FeeTabs value={fee} onChange={(next) => { setFee(next); setPage(1); }} />
 
       <div className={`${astroCard} p-4`}>
         <div className="flex flex-wrap gap-3">
