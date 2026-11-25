@@ -126,9 +126,26 @@ export interface AstrologerDetail extends AstrologerSummary {
   aadhaar?: AdminAadhaarProfile | null;
 }
 
+/** One rating left after a StarPower session. */
+export interface AstroSessionFeedbackItem {
+  ratingId: number;
+  rating: number;
+  comment: string | null;
+  tags: string[];
+  astrologerReply: string | null;
+  createdAt: string;
+}
+
+/** Feedback for one booking or instant session, in both directions. */
+export interface AstroSessionFeedback {
+  userToAstrologer: AstroSessionFeedbackItem | null;
+  astrologerToUser: AstroSessionFeedbackItem | null;
+}
+
 export interface AstroBooking {
   bookingId: number;
   sessionId: string | null;
+  feedback?: AstroSessionFeedback | null;
   sessionType: 1 | 2;
   status: string;
   displayStatus: string;
@@ -501,6 +518,7 @@ export type AstroInstantSessionStatus = 'completed' | 'in_progress' | 'cancelled
 
 export interface AstroInstantSession {
   kind: 'instant';
+  feedback?: AstroSessionFeedback | null;
   txnId: number | null;
   sessionId: string | null;
   userId: number | null;

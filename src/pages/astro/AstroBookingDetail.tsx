@@ -12,6 +12,7 @@ import CancelBookingModal, {
   formatCancelNotificationSummary,
 } from './components/CancelBookingModal';
 import AstrologerFeeCard from './components/AstrologerFeeCard';
+import { SessionFeedbackCard } from './components/SessionFeedbackCard';
 import { useModal } from '../../hooks/useModal';
 import {
   AstroAlert,
@@ -476,6 +477,8 @@ export default function AstroBookingDetailPage() {
               {duration && <AstroInfoRow label="Duration" value={duration} />}
             </div>
           </AstroSectionCard>
+
+          <SessionFeedbackCard feedback={booking.feedback} />
 
           <AstrologerFeeCard
             fee={booking.astrologerFee}

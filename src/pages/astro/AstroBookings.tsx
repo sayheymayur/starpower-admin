@@ -23,6 +23,7 @@ import {
 } from './components/astroUi';
 import { getBookingStatusLabel } from './bookingLabels';
 import { FreeFeeBadge } from './components/AstrologerFeeCard';
+import { FeedbackStarsCell } from './components/SessionFeedbackCard';
 
 const TABS: { key: string; label: string; endpoint: BookingListEndpoint }[] = [
   { key: 'all', label: 'All', endpoint: '/bookings' },
@@ -118,6 +119,7 @@ export default function AstroBookings() {
                     <th className={thClass}>Status</th>
                     <th className={thClass}>Scheduled</th>
                     <th className={thClass}>Payment</th>
+                    <th className={thClass}>Rating</th>
                     <th className={thClass}></th>
                   </tr>
                 </thead>
@@ -149,6 +151,7 @@ export default function AstroBookings() {
                           '—'
                         )}
                       </td>
+                      <td className={tdClass}><FeedbackStarsCell feedback={b.feedback} /></td>
                       <td className={tdClass}>
                         <Link
                           to={`/astro/bookings/${b.bookingId}`}

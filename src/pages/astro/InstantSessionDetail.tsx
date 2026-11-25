@@ -7,6 +7,7 @@ import {
   type SetAstrologerFeeBody,
 } from '../../services/api/astro';
 import AstrologerFeeCard, { FreeFeeBadge } from './components/AstrologerFeeCard';
+import { SessionFeedbackCard } from './components/SessionFeedbackCard';
 import {
   AstroAlert,
   AstroBackLink,
@@ -93,6 +94,7 @@ export default function InstantSessionDetail() {
             <AstroInfoRow label="Ended" value={formatAstroDate(data.endDateTime)} />
             <AstroInfoRow label="Remark" value={data.remark} />
           </AstroSectionCard>
+          <SessionFeedbackCard feedback={data.feedback} />
           <AstrologerFeeCard
             fee={data.astrologerFee}
             subject="this instant session"

@@ -24,6 +24,7 @@ import {
   thClass,
 } from './components/astroUi';
 import { useModal } from '../../hooks/useModal';
+import { UserRatingsCard } from './components/SessionFeedbackCard';
 
 export default function AstroUserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -359,6 +360,8 @@ export default function AstroUserDetailPage() {
               </div>
             </div>
           </AstroSectionCard>
+
+          <UserRatingsCard userId={user.userId} />
 
           <AstroSectionCard title="Quick links">
             <div className="space-y-2">

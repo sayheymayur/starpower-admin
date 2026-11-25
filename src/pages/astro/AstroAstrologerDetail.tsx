@@ -31,6 +31,7 @@ import {
   thClass,
 } from './components/astroUi';
 import { useModal } from '../../hooks/useModal';
+import { AstrologerRatingsCard } from './components/SessionFeedbackCard';
 
 export default function AstroAstrologerDetailPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -462,6 +463,8 @@ export default function AstroAstrologerDetailPage() {
               </div>
             </div>
           </AstroSectionCard>
+
+          <AstrologerRatingsCard astrologerUserId={astro.userId} />
 
           {(astro.specialities?.length ?? 0) === 0 && (
             <div className={`${astroCard} border-dashed p-5 text-center`}>
