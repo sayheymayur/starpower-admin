@@ -98,6 +98,8 @@ const navSections: NavSection[] = [
       { name: 'Test payouts', path: '/astro/payouts', test: true, scopes: ['astro.payouts:read', 'astro.*:read'] },
       { name: 'Test invoices', path: '/astro/invoices', test: true, scopes: ['astro.invoices:read', 'astro.*:read'] },
       { name: 'Test reviews', path: '/astro/ratings', test: true, scopes: ['astro.ratings:read', 'astro.*:read'] },
+      { name: 'Test wallets', path: '/astro/wallets', test: true, scopes: ['wallet.astro.wallets:read', 'wallet.astro.*:read', 'astro.*:read'] },
+      { name: 'Test wallet transactions', path: '/astro/wallet-transactions', test: true, scopes: ['wallet.astro.transactions:read', 'wallet.astro.*:read', 'astro.*:read'] },
     ],
   },
   {
