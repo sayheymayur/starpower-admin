@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router';
 import { setAccountsMode, useAccountsMode } from '../utils/accountsMode';
+import TestDataToggle from '../components/TestDataToggle';
 import { SidebarProvider, useSidebar } from '../context/SidebarContext';
 import AstroSidebar from './AstroSidebar';
 import Backdrop from './Backdrop';
@@ -35,6 +36,7 @@ const AstroLayoutContent: React.FC = () => {
                 </span>
               </div>
             </div>
+            <TestDataToggle />
           </div>
         </header>
         {accountsMode === 'test' && (
