@@ -6,6 +6,7 @@ import UserUpdateForm from "../components/UserUpdateForm";
 import AadhaarProfileCard from "../components/aadhaar/AadhaarProfileCard";
 import type { AdminAadhaarProfile } from "../services/api/aadhaar";
 import useGoBack from "../hooks/useGoBack";
+import { API_ORIGIN, PUBLIC_URL_PREFIX_RE } from '../config/apiOrigin';
 
 interface ComprehensiveUser {
   userId: number;
@@ -632,14 +633,14 @@ export default function EnhancedUserDetails() {
                         <img
                           src={user.assessmentCerti.startsWith('http') 
                             ? user.assessmentCerti 
-                            : `https://paapi.sayhey.co.in/public/${user.assessmentCerti.replace('https://paapi.sayhey.co.in/public/', '')}`
+                            : `${API_ORIGIN}/public/${user.assessmentCerti.replace(PUBLIC_URL_PREFIX_RE, '')}`
                           }
                           alt="Assessment Certificate"
                           className="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-600 max-h-[500px] object-contain cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => {
                             const imageUrl = user.assessmentCerti!.startsWith('http') 
                               ? user.assessmentCerti 
-                              : `https://paapi.sayhey.co.in/public/${user.assessmentCerti!.replace('https://paapi.sayhey.co.in/public/', '')}`;
+                              : `${API_ORIGIN}/public/${user.assessmentCerti!.replace(PUBLIC_URL_PREFIX_RE, '')}`;
                             window.open(imageUrl, '_blank');
                           }}
                           onError={(e) => {
@@ -651,7 +652,7 @@ export default function EnhancedUserDetails() {
                       <a
                         href={user.assessmentCerti.startsWith('http') 
                           ? user.assessmentCerti 
-                          : `https://paapi.sayhey.co.in/public/${user.assessmentCerti.replace('https://paapi.sayhey.co.in/public/', '')}`
+                          : `${API_ORIGIN}/public/${user.assessmentCerti.replace(PUBLIC_URL_PREFIX_RE, '')}`
                         }
                         target="_blank"
                         rel="noopener noreferrer"
@@ -679,14 +680,14 @@ export default function EnhancedUserDetails() {
                         <img
                           src={user.qualificationProof.startsWith('http') 
                             ? user.qualificationProof 
-                            : `https://paapi.sayhey.co.in/public/${user.qualificationProof.replace('https://paapi.sayhey.co.in/public/', '')}`
+                            : `${API_ORIGIN}/public/${user.qualificationProof.replace(PUBLIC_URL_PREFIX_RE, '')}`
                           }
                           alt="Qualification Proof"
                           className="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-600 max-h-[500px] object-contain cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => {
                             const imageUrl = user.qualificationProof!.startsWith('http') 
                               ? user.qualificationProof 
-                              : `https://paapi.sayhey.co.in/public/${user.qualificationProof!.replace('https://paapi.sayhey.co.in/public/', '')}`;
+                              : `${API_ORIGIN}/public/${user.qualificationProof!.replace(PUBLIC_URL_PREFIX_RE, '')}`;
                             window.open(imageUrl, '_blank');
                           }}
                           onError={(e) => {
@@ -698,7 +699,7 @@ export default function EnhancedUserDetails() {
                       <a
                         href={user.qualificationProof.startsWith('http') 
                           ? user.qualificationProof 
-                          : `https://paapi.sayhey.co.in/public/${user.qualificationProof.replace('https://paapi.sayhey.co.in/public/', '')}`
+                          : `${API_ORIGIN}/public/${user.qualificationProof.replace(PUBLIC_URL_PREFIX_RE, '')}`
                         }
                         target="_blank"
                         rel="noopener noreferrer"

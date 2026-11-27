@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { API_ORIGIN } from '../config/apiOrigin';
 
 interface APICard {
   title: string;
@@ -344,7 +345,7 @@ export default function APIDashboard() {
           <div className="flex justify-between items-center">
             <span className="text-gray-600 dark:text-gray-400">Base URL:</span>
             <code className="bg-white dark:bg-gray-800 px-3 py-1 rounded text-blue-600 dark:text-blue-400">
-              https://paapi.sayhey.co.in/api/dashboard/api
+              {`${API_ORIGIN}/api/dashboard/api`}
             </code>
           </div>
           <div className="flex justify-between items-center">

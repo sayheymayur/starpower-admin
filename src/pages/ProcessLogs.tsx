@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import dashboardAPI from "../services/dashboardAPI";
 import { AngleLeftIcon } from "../icons";
+import { API_ORIGIN } from '../config/apiOrigin';
 
 interface PM2Process {
   pmId: number;
@@ -50,7 +51,7 @@ export default function ProcessLogs() {
   useEffect(() => {
     if (!processId || !process) return;
 
-    const url = `https://paapi.sayhey.co.in/api/dashboard/api/monitoring/pm2/logs/${processId}?lines=100`;
+    const url = `${API_ORIGIN}/api/dashboard/api/monitoring/pm2/logs/${processId}?lines=100`;
     const eventSource = new EventSource(url, { withCredentials: false });
 
     eventSource.onmessage = (event) => {

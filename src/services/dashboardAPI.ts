@@ -4,8 +4,9 @@
  */
 
 import { authService, UNAUTHORIZED_EVENT } from './auth/dashboardAuth';
+import { API_ORIGIN } from '../config/apiOrigin';
 
-const BASE_URL = 'https://paapi.sayhey.co.in/api/dashboard/api';
+const BASE_URL = `${API_ORIGIN}/api/dashboard/api`;
 
 interface ApiResponse<T> {
   success: boolean;
@@ -1294,7 +1295,7 @@ class DashboardAPIService {
 
   // Invoice API Methods
   private async invoiceRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-    const invoiceBaseURL = 'https://paapi.sayhey.co.in/public/api';
+    const invoiceBaseURL = `${API_ORIGIN}/public/api`;
     try {
       const response = await fetch(`${invoiceBaseURL}${endpoint}`, {
         ...options,
@@ -1367,7 +1368,7 @@ class DashboardAPIService {
   }
 
   async downloadInvoice(userId: number, filename: string): Promise<Blob> {
-    const invoiceBaseURL = 'https://paapi.sayhey.co.in/public/api';
+    const invoiceBaseURL = `${API_ORIGIN}/public/api`;
     const response = await fetch(`${invoiceBaseURL}/invoices/user/${userId}/download/${filename}`, {
       method: 'GET',
       headers: {
@@ -1388,7 +1389,7 @@ class DashboardAPIService {
 
   // Admin Notification API Methods
   private async notificationRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-    const notificationBaseURL = 'https://paapi.sayhey.co.in/api/notification/admin';
+    const notificationBaseURL = `${API_ORIGIN}/api/notification/admin`;
     try {
       return await this.fetchWithAuth<T>(`${notificationBaseURL}${endpoint}`, options);
     } catch (error) {
@@ -1490,7 +1491,7 @@ class DashboardAPIService {
     imageUrl?: string;
   }): Promise<ApiResponse<any>> {
     // Use direct request for /api/notifications/send-to-token endpoint
-    const notificationBaseURL = 'https://paapi.sayhey.co.in/api/notification';
+    const notificationBaseURL = `${API_ORIGIN}/api/notification`;
     try {
       return await this.fetchWithAuth<any>(`${notificationBaseURL}/send-to-token`, {
         method: 'POST',
@@ -1582,7 +1583,7 @@ class DashboardAPIService {
   // Chat API uses /api/chats or /api/dashboard/chats base path
   // Using /api/dashboard/chats to match the dashboard API pattern
   private async chatRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-    const chatBaseURL = 'https://paapi.sayhey.co.in/api/dashboard/api/chats';
+    const chatBaseURL = `${API_ORIGIN}/api/dashboard/api/chats`;
     try {
       return await this.fetchWithAuth<T>(`${chatBaseURL}${endpoint}`, options);
     } catch (error) {
@@ -1841,7 +1842,7 @@ class DashboardAPIService {
   // Since BASE_URL is /api/dashboard/api, we need to use relative paths that match /api/dashboard/todos/...
   
   private async todosRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-    const baseURL = 'https://paapi.sayhey.co.in/api/dashboard/api';
+    const baseURL = `${API_ORIGIN}/api/dashboard/api`;
     return this.fetchWithAuth<T>(`${baseURL}${endpoint}`, options);
   }
   

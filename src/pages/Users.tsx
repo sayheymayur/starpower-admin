@@ -12,6 +12,7 @@ import {
 } from "../components/ui/table";
 
 import { TrashBinIcon, PencilIcon } from "../icons";
+import { API_ORIGIN } from '../config/apiOrigin';
 
 interface User {
   userId: number;
@@ -77,7 +78,7 @@ export default function Users() {
 
   const fetchData = () => {
     const token = authService.getToken();
-    fetch('https://paapi.sayhey.co.in/api/dashboard/api/userdata/getallusers', {
+    fetch(`${API_ORIGIN}/api/dashboard/api/userdata/getallusers`, {
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),

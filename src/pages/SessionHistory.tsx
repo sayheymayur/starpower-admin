@@ -11,6 +11,7 @@ import {
 } from "../components/ui/table";
 
 import { TrashBinIcon, PencilIcon } from "../icons";
+import { API_ORIGIN } from '../config/apiOrigin';
 
 interface State {
   state_id_pk: number;
@@ -101,7 +102,7 @@ export default function SessionHistory() {
   const [endDate, setEndDate] = useState<string>("");
   const [dateField, setDateField] = useState<string>("request_date_time");
 
-  const API_BASE_URL = "https://paapi.sayhey.co.in/api/dashboard/api";
+  const API_BASE_URL = `${API_ORIGIN}/api/dashboard/api`;
   const isMissedFilter = statusFilter === "missed";
 
   const toIsoDateTime = (localValue: string) => {

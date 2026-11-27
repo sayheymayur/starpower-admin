@@ -10,6 +10,7 @@ import {
 import Badge from "../components/ui/badge";
 import { TrashBinIcon, PencilIcon, DownloadIcon } from "../icons";
 import { dashboardAPI } from "../services/dashboardAPI";
+import { API_ORIGIN, PUBLIC_URL_PREFIX_RE } from '../config/apiOrigin';
 
 export interface Listener {
   userId: string;
@@ -290,11 +291,11 @@ export default function DataTableThree() {
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-900 dark:text-gray-100 text-sm flex">
                     {user.assessmentCerti && 
-                    <a className="items-center gap-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" href={`https://paapi.sayhey.co.in/public/${user.assessmentCerti.replace('https://paapi.sayhey.co.in/public/','')}`} target="_blank"> Assement </a>
+                    <a className="items-center gap-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" href={`${API_ORIGIN}/public/${user.assessmentCerti.replace(PUBLIC_URL_PREFIX_RE, '')}`} target="_blank"> Assement </a>
                     }
                     
                      {user.qualificationProof && 
-                    <a className="items-center gap-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" href={`https://paapi.sayhey.co.in/public/${user.qualificationProof.replace('https://paapi.sayhey.co.in/public/','')}`} target="_blank"> Qualification </a>
+                    <a className="items-center gap-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" href={`${API_ORIGIN}/public/${user.qualificationProof.replace(PUBLIC_URL_PREFIX_RE, '')}`} target="_blank"> Qualification </a>
                     }
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-900 dark:text-gray-100 text-sm">

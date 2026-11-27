@@ -1,9 +1,10 @@
+import { API_ORIGIN } from '../../config/apiOrigin';
 // API Configuration
 // StarPower Admin API — production gateway mounts dashboard at /api/dashboard/api
 export const API_CONFIG = {
   BASE_URL:
     import.meta.env.VITE_DASHBOARD_API ??
-    'https://paapi.sayhey.co.in/api/dashboard/api',
+    `${API_ORIGIN}/api/dashboard/api`,
   TIMEOUT: 30000,
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000,
